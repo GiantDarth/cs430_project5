@@ -25,6 +25,15 @@ Vertex vertexes[] = {
     {{-1, 1}, {0, 0.99999}}
 };
 
+#define ANGLE_STEP 1.5707963267948966192313216916398
+
+mat4x4 matrix;
+float angle;
+
+static void matrix_reset() {
+    mat4x4_identity(matrix);
+}
+
 static const char* vertex_shader_src =
     "uniform mat4 MVP;\n"
     "attribute vec2 TexCoordIn;\n"
@@ -53,6 +62,36 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 {
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
         glfwSetWindowShouldClose(window, GLFW_TRUE);
+    }
+    if(key == GLFW_KEY_LEFT_BRACKET && action == GLFW_PRESS) {
+        mat4x4_rotate_Z(matrix, matrix, ANGLE_STEP);
+    }
+    if(key == GLFW_KEY_RIGHT_BRACKET && action == GLFW_PRESS) {
+        mat4x4_rotate_Z(matrix, matrix, -ANGLE_STEP);
+    }
+    if(key == GLFW_KEY_SEMICOLON && action == GLFW_PRESS) {
+        // TODO Shear
+    }
+    if(key == GLFW_KEY_KP_ADD && action == GLFW_PRESS) {
+        // TODO Zoom in (scale)
+    }
+    if(key == GLFW_KEY_KP_SUBTRACT && action == GLFW_PRESS) {
+        // TODO Zoom out (scale)
+    }
+    if(key == GLFW_KEY_UP && action == GLFW_PRESS) {
+        // TODO Translate up
+    }
+    if(key == GLFW_KEY_LEFT && action == GLFW_PRESS) {
+        // TODO Translate left
+    }
+    if(key == GLFW_KEY_DOWN && action == GLFW_PRESS) {
+        // TODO Translate down
+    }
+    if(key == GLFW_KEY_RIGHT && action == GLFW_PRESS) {
+        // TODO Translate right
+    }
+    if(key == GLFW_KEY_ENTER && action == GLFW_PRESS) {
+        matrix_reset(matrix);
     }
 }
 
@@ -206,10 +245,13 @@ int main(int argc, const char* argv[])
     glBindTexture(GL_TEXTURE_2D, texID);
     glUniform1i(tex_location, 0);
 
+    // Initialize matrix
+    matrix_reset(matrix);
+
     while (!glfwWindowShouldClose(window)) {
         float ratio;
         int width, height;
-        mat4x4 m, p, mvp;
+        mat4x4 p, mvp;
 
         glfwGetFramebufferSize(window, &width, &height);
         ratio = width / (float) height;
@@ -217,10 +259,8 @@ int main(int argc, const char* argv[])
         glViewport(0, 0, width, height);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        mat4x4_identity(m);
-        mat4x4_rotate_Z(m, m, (float) glfwGetTime());
         mat4x4_ortho(p, -ratio, ratio, -1.f, 1.f, 1.f, -1.f);
-        mat4x4_mul(mvp, p, m);
+        mat4x4_mul(mvp, p, matrix);
 
         glUseProgram(program);
         glUniformMatrix4fv(mvp_location, 1, GL_FALSE, (const GLfloat*) mvp);
