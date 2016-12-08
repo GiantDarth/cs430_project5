@@ -105,62 +105,97 @@ static void error_callback(int error, const char* description) {
   fputs(description, stderr);
 }
 
-int main(void) {
-  GLint program_id, position_slot, color_slot;
-  GLuint vertex_buffer;
-  GLuint index_buffer;
+int main(int argc, const char* argv[]) {
+    if(argc != 2) {
+        fprintf(stderr, "usage: ezview /path/to/inputFile\n");
+        return EXIT_FAILURE;
+    }
 
-  glfwSetErrorCallback(error_callback);
+    const char* inputPath = argv[1];
 
-  // Initialize GLFW library
-  if (!glfwInit())
-    return -1;
+    FILE* inputFd;
 
-  glfwDefaultWindowHints();
-  glfwWindowHint(GLFW_CONTEXT_CREATION_API, GLFW_EGL_CONTEXT_API);
-  glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+    if((inputFd = fopen(inputPath, "r")) == NULL) {
+        perror("Error: Cannot open input file\n");
+        return EXIT_FAILURE;
+    }
 
-  // Create and open a window
-  window = glfwCreateWindow(640,
+    pnmHeader header;
+    pixel* pixels;
+
+    // Read the file, get format
+    if(readHeader(&header, inputFd) < 0) {
+        return EXIT_FAILURE;
+    }
+
+    if((pixels = malloc(sizeof(*pixels) * header.width * header.height)) == NULL) {
+        perror("Error: Memory allocation error on pixels\n");
+        return EXIT_FAILURE;
+    }
+    if(readBody(header, pixels, inputFd) < 0) {
+        return EXIT_FAILURE;
+    }
+
+    if(fclose(inputFd) == EOF) {
+        perror("Error: Closing file\n");
+        return EXIT_FAILURE;
+    }
+
+    GLint program_id, position_slot, color_slot;
+    GLuint vertex_buffer;
+    GLuint index_buffer;
+
+    glfwSetErrorCallback(error_callback);
+
+    // Initialize GLFW library
+    if (!glfwInit())
+        return -1;
+
+    glfwDefaultWindowHints();
+    glfwWindowHint(GLFW_CONTEXT_CREATION_API, GLFW_EGL_CONTEXT_API);
+    glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+
+    // Create and open a window
+    window = glfwCreateWindow(640,
                             480,
                             "Hello World",
                             NULL,
                             NULL);
 
-  if (!window) {
+    if (!window) {
     glfwTerminate();
     printf("glfwCreateWindow Error\n");
     exit(1);
-  }
+    }
 
-  glfwMakeContextCurrent(window);
+    glfwMakeContextCurrent(window);
 
-  program_id = simple_program();
+    program_id = simple_program();
 
-  glUseProgram(program_id);
+    glUseProgram(program_id);
 
-  position_slot = glGetAttribLocation(program_id, "Position");
-  color_slot = glGetAttribLocation(program_id, "SourceColor");
-  glEnableVertexAttribArray(position_slot);
-  glEnableVertexAttribArray(color_slot);
+    position_slot = glGetAttribLocation(program_id, "Position");
+    color_slot = glGetAttribLocation(program_id, "SourceColor");
+    glEnableVertexAttribArray(position_slot);
+    glEnableVertexAttribArray(color_slot);
 
-  // Create Buffer
-  glGenBuffers(1, &vertex_buffer);
+    // Create Buffer
+    glGenBuffers(1, &vertex_buffer);
 
-  // Map GL_ARRAY_BUFFER to this buffer
-  glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
+    // Map GL_ARRAY_BUFFER to this buffer
+    glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
 
-  // Send the data
-  glBufferData(GL_ARRAY_BUFFER, sizeof(Vertices), Vertices, GL_STATIC_DRAW);
+    // Send the data
+    glBufferData(GL_ARRAY_BUFFER, sizeof(Vertices), Vertices, GL_STATIC_DRAW);
 
-  glGenBuffers(1, &index_buffer);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_buffer);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(Indices), Indices, GL_STATIC_DRAW);
+    glGenBuffers(1, &index_buffer);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_buffer);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(Indices), Indices, GL_STATIC_DRAW);
 
-  // Repeat
-  while (!glfwWindowShouldClose(window)) {
+    // Repeat
+    while (!glfwWindowShouldClose(window)) {
 
     glClearColor(0, 104.0/255.0, 55.0/255.0, 1.0);
     glClear(GL_COLOR_BUFFER_BIT);
@@ -187,9 +222,9 @@ int main(void) {
 
     glfwSwapBuffers(window);
     glfwPollEvents();
-  }
+    }
 
-  glfwDestroyWindow(window);
-  glfwTerminate();
-  exit(EXIT_SUCCESS);
+    glfwDestroyWindow(window);
+    glfwTerminate();
+    exit(EXIT_SUCCESS);
 }
