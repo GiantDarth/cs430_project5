@@ -193,9 +193,6 @@ int main(int argc, const char* argv[])
         sizeof(Vertex),
         (void*) (sizeof(float) * 2));
 
-    int image_width = 4;
-    int image_height = 4;
-
     GLuint texID;
     glGenTextures(1, &texID);
     glBindTexture(GL_TEXTURE_2D, texID);
