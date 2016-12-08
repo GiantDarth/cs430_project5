@@ -7,6 +7,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#include "read.h"
+
 
 GLFWwindow* window;
 
@@ -75,7 +77,6 @@ GLint simple_shader(GLint shader_type, char* shader_src) {
 
 
 int simple_program() {
-
   GLint link_success = 0;
 
   GLint program_id = glCreateProgram();
@@ -104,9 +105,7 @@ static void error_callback(int error, const char* description) {
   fputs(description, stderr);
 }
 
-
 int main(void) {
-
   GLint program_id, position_slot, color_slot;
   GLuint vertex_buffer;
   GLuint index_buffer;
