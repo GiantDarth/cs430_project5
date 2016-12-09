@@ -198,7 +198,7 @@ int main(int argc, const char* argv[])
     glfwSetErrorCallback(error_callback);
 
     if (!glfwInit()) {
-        exit(EXIT_FAILURE);
+        return EXIT_FAILURE;
     }
 
     glfwDefaultWindowHints();
@@ -211,7 +211,7 @@ int main(int argc, const char* argv[])
     if (!window) {
         glfwTerminate();
         fprintf(stderr, "Error: glfwCreateWindow\n");
-        exit(EXIT_FAILURE);
+        return EXIT_FAILURE;
     }
 
     glfwSetKeyCallback(window, key_callback);
@@ -307,7 +307,7 @@ int main(int argc, const char* argv[])
     }
 
     glfwDestroyWindow(window);
-
     glfwTerminate();
-    exit(EXIT_SUCCESS);
+    
+    return EXIT_SUCCESS;
 }
