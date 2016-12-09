@@ -16,16 +16,17 @@ typedef struct {
     float TexCoord[2];
 } Vertex;
 
-// (-1, 1)  (1, 1)
-// (-1, -1) (1, -1)
-
 Vertex vertexes[] = {
-    {{1, -1}, {0.99999, 0}},
-    {{1, 1},  {0.99999, 0.99999}},
-    {{-1, 1}, {0, 0.99999}}
+    {{1, -1}, {0.99999, 0.99999}}, // Bottom-right
+    {{1, 1},  {0.99999, 0}}, // Top-right
+    {{-1, -1}, {0, 0.99999}}, // Bottom-left
+    {{-1, 1}, {0, 0}}// Top-left
 };
 
 #define ANGLE_STEP 1.5707963267948966192313216916398
+#define TRANSLATE_STEP 0.2
+#define SCALE_STEP 2
+#define SHEAR_STEP 0.1
 
 mat4x4 matrix;
 float angle;
@@ -46,7 +47,7 @@ static const char* vertex_shader_src =
     "}\n";
 
 static const char* fragment_shader_src =
-    "varying lowp vec2 TexCoordOut;\n"
+    "varying highp vec2 TexCoordOut;\n"
     "uniform sampler2D Texture;\n"
     "void main()\n"
     "{\n"
@@ -60,39 +61,64 @@ static void error_callback(int error, const char* description)
 
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
+    mat4x4 transform_m;
+    mat4x4_identity(transform_m);
+
+    // Exit
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
         glfwSetWindowShouldClose(window, GLFW_TRUE);
     }
+    // Rotate left
     if(key == GLFW_KEY_LEFT_BRACKET && action == GLFW_PRESS) {
         mat4x4_rotate_Z(matrix, matrix, ANGLE_STEP);
     }
+    // Rotate right
     if(key == GLFW_KEY_RIGHT_BRACKET && action == GLFW_PRESS) {
         mat4x4_rotate_Z(matrix, matrix, -ANGLE_STEP);
     }
+    // Shear parallel to x
     if(key == GLFW_KEY_SEMICOLON && action == GLFW_PRESS) {
-        // TODO Shear
+        transform_m[1][0] = -SHEAR_STEP;
     }
-    if(key == GLFW_KEY_KP_ADD && action == GLFW_PRESS) {
-        // TODO Zoom in (scale)
+    if(key == GLFW_KEY_APOSTROPHE && action == GLFW_PRESS) {
+        transform_m[1][0] = SHEAR_STEP;
     }
-    if(key == GLFW_KEY_KP_SUBTRACT && action == GLFW_PRESS) {
-        // TODO Zoom out (scale)
+    // Shear parallel to y
+    if(key == GLFW_KEY_PERIOD && action == GLFW_PRESS) {
+        transform_m[0][1] = -SHEAR_STEP;
     }
+    if(key == GLFW_KEY_SLASH && action == GLFW_PRESS) {
+        transform_m[0][1] = SHEAR_STEP;
+    }
+    // Zoom in
+    if(key == GLFW_KEY_EQUAL && action == GLFW_PRESS) {
+        transform_m[0][0] = SCALE_STEP;
+        transform_m[1][1] = SCALE_STEP;
+    }
+    // Zoom out
+    if(key == GLFW_KEY_MINUS && action == GLFW_PRESS) {
+        transform_m[0][0] = 1 / (float)SCALE_STEP;
+        transform_m[1][1] = 1 / (float)SCALE_STEP;
+    }
+    // Translate image
     if(key == GLFW_KEY_UP && action == GLFW_PRESS) {
-        // TODO Translate up
+        mat4x4_translate(transform_m, 0, TRANSLATE_STEP, 0);
     }
     if(key == GLFW_KEY_LEFT && action == GLFW_PRESS) {
-        // TODO Translate left
+        mat4x4_translate(transform_m, -TRANSLATE_STEP, 0, 0);
     }
     if(key == GLFW_KEY_DOWN && action == GLFW_PRESS) {
-        // TODO Translate down
+        mat4x4_translate(transform_m, 0, -TRANSLATE_STEP, 0);
     }
     if(key == GLFW_KEY_RIGHT && action == GLFW_PRESS) {
-        // TODO Translate right
+        mat4x4_translate(transform_m, TRANSLATE_STEP, 0, 0);
     }
+    // Reset
     if(key == GLFW_KEY_ENTER && action == GLFW_PRESS) {
         matrix_reset(matrix);
     }
+
+    mat4x4_mul(matrix, matrix, transform_m);
 }
 
 void glCompileShaderOrDie(GLuint shader) {
@@ -264,7 +290,7 @@ int main(int argc, const char* argv[])
 
         glUseProgram(program);
         glUniformMatrix4fv(mvp_location, 1, GL_FALSE, (const GLfloat*) mvp);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
