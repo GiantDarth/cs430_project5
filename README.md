@@ -1,69 +1,45 @@
-# GLES2 Starter Kit for WIN32
+# ezview
+### CS430 - Project 5 (Image Viewer)
+**Christopher Robert Philabaum**
 
-[OpenGL for Embedded Systems](http://www.khronos.org/opengles/)
-(OpenGL ES) is a rendering API for 2D and 3D graphics.  The API is
-cross-language and multiplatform.  The OpenGL ES2 (GLES2)
-specification is available for Apple iOS 5+ (e.g., iPad, iPhone, and
-iPod Touch), Android 2.0+, the Raspberry Pi, WebGL, Windows XP -
-Windows 10 (via ANGLE), and Mac OS 10.9+ (via OpenGL 4.1 which is 
-API compatibility with OpenGL ES 2).
+**Northern Arizona University (Fall 2016)**
 
-OpenGL ES 2 is generally very pleasant to program with but it only
-provides a graphics API.  Working with windows and any kind of user
-input isn't part of the API.  For Windows, OS X, and Unix-like systems
-[GLFW](http://www.glfw.org/) can provide an abstraction layer.
+ezview is a image tool that allows one to load in a P3 or P6 PPM file and perform
+various transformations on in it such as shear, scale, translation, scale, and
+rotate.
 
-## What's this then?
+**Note:**
+* This program chooses to output the PPM file as a P6 raw binary format.
 
-This is a starter project that puts some of the pieces together.
+## Usage
+`ezview /path/to/input.ppm`
 
-There is no standard OpenGL ES2 development kit for Windows but one
-of the best implementation is Google's
-[ANGLE](http://angleproject.org/) which provides an OpenGL ES2 API
-that translates ES2 calls to hardware accelerated Direct3D calls.
-You can see this technology in action within Google Chrome's WebGL
-support.  Unfortunately Google doesn't provide precompiled binaries
-for GLESv2.
+### controls:
+1. Reset Image: `Enter` key
+1. Exit: `Esc` key
+1. Zoom In x2 (Scale): `=` key
+1. Zoom Out x2 (Scale): `-` key
+1. Pan Up/Down/Left/Right: `Up`, `Down`, `Left`, `Right` arrow keys
+1. Rotate Right 90°: `]` key
+1. Rotate Left 90°: `[` key
+1. Shear Right along _x_-axis: `'` key
+1. Shear Left along _x_-axis: `;` key
+1. Shear Up along _y_-axis: `/` key
+1. Shear Down along _y_-axis: `,` key
 
-But this starter kit does!
+### parameters:
+1. `inputFile`: A valid path, absolute or relative (to *pwd*), to the input ppm file.
+Must be P3 or P6 only.
 
-## What's included?
+All parameters are *required* and not optional. All parameters must be used in the exact order provided above.
 
-This package includes:
+## Requirements
+1. Visual Studio 2015 (Any Edition)
+2. Uses OpenGL ES 2.0 and GLFW, which are provided.
 
-* ANGLE compiled with Visual Studio 2015 (10/31/2016)
-    * libEGL.dll
-    * libEGL.lib
-    * libGLESv2.dll
-    * libGLESv2.lib
-    * EGL and GLES header files
-* GLFW 3.2.1 compiled with Visual Studio 2015 (08/18/2016)
-* d3dcompiler_47.dll for support on older Windows systems
-* An example with an NMake compatible Makefile.
+## Compile
+In Developer Command Prompt for VS2015, run:
+`nmake`: Compiles the program into the current directory as `ezview.exe`
 
-ANGLE has been compiled with Visual Studio 2015 using the 32-bit target
-using [these directions](https://code.google.com/p/angleproject/wiki/DevSetup).
-
-All files are copyright their respective authors and licensed respectively 
-under the New BSD License (ANGLE), zlib/libpng (GLFW), royalty free distribution
-(Khronos headers), and the DirectX SDK EULA (DirectX).
-
-Royalty free redistribution of d3dcompiler_47.dll is allowed per 
-https://blogs.msdn.microsoft.com/chuckw/2012/05/07/hlsl-fxc-and-d3dcompile/
-
-## How do I use this kit?
-
-You might start by compiling the demo.
-
-1. Launch the "Visual Studio Command Prompt"
-2. CD to this directory
-3. Type "nmake" to compile the demo
-4. Type "demo" to test the demo
-
-You can also build your own Visual C++ solution - just make sure to
-set the include and library paths such that they include this
-directory.
-
-## Where do I get it?
-
-[GLES2StarterKit-2.0.zip]()
+## Grader Notes
+* `nmake` compiles `ezview` to the project folder, so in order to run it properly it should be used as `ezview /path/to/input.ppm` where the project folder is the working directory.
