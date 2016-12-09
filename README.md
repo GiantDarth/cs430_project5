@@ -18,6 +18,8 @@ rotate.
 1. `inputFile`: A valid path, absolute or relative (to *pwd*), to the input ppm file.
 Must be P3 or P6 only.
 
+All parameters are *required* and not optional. All parameters must be used in the exact order provided above.
+
 ### controls:
 1. Reset Image: `Enter` key
 1. Exit: `Esc` key
@@ -30,8 +32,6 @@ Must be P3 or P6 only.
 1. Shear Left along _x_-axis: `;` key
 1. Shear Up along _y_-axis: `/` key
 1. Shear Down along _y_-axis: `,` key
-
-All parameters are *required* and not optional. All parameters must be used in the exact order provided above.
 
 ## Requirements
 1. Visual Studio 2015 (Any Edition)
