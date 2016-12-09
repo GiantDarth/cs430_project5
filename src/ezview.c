@@ -172,6 +172,11 @@ int main(int argc, const char* argv[])
         return EXIT_FAILURE;
     }
 
+    if(header.mode != 3 || header.mode != 6) {
+        fprintf(stderr, "Error: PPM file must be P3 or P6.\n");
+        return EXIT_FAILURE;
+    }
+
     if((pixels = malloc(sizeof(*pixels) * header.width * header.height)) == NULL) {
         perror("Error: Memory allocation error on pixels\n");
         return EXIT_FAILURE;
