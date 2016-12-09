@@ -31,7 +31,7 @@ All parameters are *required* and not optional. All parameters must be used in t
 1. Shear Right along _x_-axis: `'` key
 1. Shear Left along _x_-axis: `;` key
 1. Shear Up along _y_-axis: `/` key
-1. Shear Down along _y_-axis: `,` key
+1. Shear Down along _y_-axis: `.` key
 
 ## Requirements
 1. Visual Studio 2015 (Any Edition)
