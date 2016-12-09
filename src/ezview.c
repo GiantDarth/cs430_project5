@@ -1,3 +1,8 @@
+// Based on the texture demo by Dr. Palmer
+// ezview - Christopher Philabaum <cp723@nau.edu>
+// Allows the user to load in an image and perform various affine transformations
+// on it
+
 #define GLFW_DLL 1
 
 #define GL_GLEXT_PROTOTYPES
